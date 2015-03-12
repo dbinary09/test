@@ -11,28 +11,47 @@
       #messages { list-style-type: none; margin: 0; padding: 0; }
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
+	#namediv { min-height: 100%; }
     </style>
   </head>
   <body>
     <ul id="messages"></ul>
     <div id="bottom" style="height: 45px;">_____________</div>
-    <form action="">
+    
+    <form action="" id=namediv  hidden="true" >
+	<input id="nameinput" autocomplete="off" /><button>Set name</button>
+    </form>
+    <form action="" id=chatdiv>
       <input id="chatinput" autocomplete="off" /><button>Send</button>
     </form>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
+      var name = "";
+	if (name != ""){	// name already set
+		$('#chatdiv').show();
+		$('#namediv').hide();
+	}else{	// name not set
+		$('#chatdiv').hide();
+		$('#namediv').show();
+	}
+	
 	var socket = io();
 	$('form').submit(function(){
+		if ($('#nameinput').val() != ""){
+			name = $('#nameinput').val();
+			$('#chatdiv').show();
+			$('#namediv').hide();
+		}
 		var msg = $('#chatinput').val();
 		if (msg){
-			socket.emit('chat message', msg);
+			socket.emit('chat message', name, msg);
 			$('#chatinput').val('');	// clears text
 		}
 		return false;
 	});
-	socket.on('chat message', function(username, msg){
-		$('#messages').append($('<li>').text(username + " " + msg));
+	socket.on('chat message', function(sendername, msg){
+		$('#messages').append($('<li>').text(sendername + " " + msg));
 		scrollToBottom();
 	});
 
