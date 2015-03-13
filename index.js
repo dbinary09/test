@@ -12,6 +12,9 @@ io.on('connection', function(socket){
   socket.on('chat message', function(sendername, msg){
     io.emit('chat message', sendername, msg);
   });
+  socket.on('payload', function(msg){
+    io.emit('payload', msg);
+  });
 });
 
 http.listen(port, function(){

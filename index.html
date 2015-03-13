@@ -24,8 +24,15 @@
     <form action="" id=chatdiv>
       <input id="chatinput" autocomplete="off" /><button>Send</button>
     </form>
+    
+    <canvas id="canvasDiv" width="490" height="220"></canvas>
+	<script type="text/javascript"> $(document).ready(function() {
+		 prepareCanvas();
+	});</script>
+
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="html5-canvas-drawing-app.js"></script>
     <script>
       var name = "";
 	if (name != ""){	// name already set
@@ -47,6 +54,7 @@
 		if (msg){
 			socket.emit('chat message', name, msg);
 			$('#chatinput').val('');	// clears text
+			socket.emit('payload', msg);
 		}
 		return false;
 	});
@@ -55,8 +63,12 @@
 		scrollToBottom();
 	});
 
+	socket.on('payload', function(msg){
+		//alert(msg);
+	});
+	
 	function scrollToBottom() {
-		document.getElementById( 'bottom' ).scrollIntoView();
+		document.getElementById('bottom').scrollIntoView();
 	};
     </script>
   </body>
