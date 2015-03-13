@@ -15,6 +15,7 @@
     </style>
   </head>
 	<body onload=init()>
+
 		<table>
 			<tr>
 				<td style="width:50%;position:fixed">
@@ -42,13 +43,13 @@
 		</table>
 
     
-	<link rel="/stylesheet" href="uikit.min.css" />
-	<script src="jquery.js"></script>
-	<script src="uikit.min.js"></script>
+	<link rel="/stylesheet" href="/uikit.min.css" />
+	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+      <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="/uikit.min.js"></script>
 
-		    
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+	<textarea id="textarea"> 
+    </textarea> 
     
     <script>
       var name = "";
@@ -77,6 +78,7 @@
 	
 	socket.on('chat message', function(sendername, msg){
 		$('#messages').append($('<li>').text(sendername + " " + msg));
+		$('#textarea').append(sendername + " " + msg + "\n");
 		scrollToBottom();
 	});
 
