@@ -14,7 +14,7 @@
 	#namediv { min-height: 100%; }
     </style>
   </head>
-  <body>
+  <body onload=init()>
     <ul id="messages"></ul>
     <div id="bottom" style="height: 45px;">_____________</div>
     
@@ -25,8 +25,11 @@
       <input id="chatinput" autocomplete="off" /><button>Send</button>
     </form>
     
-    <canvas id="canvasDiv" width="490" height="220"></canvas>
-	
+    <canvas id="myCanvas" width="300" height="300">
+		<!-- Insert fallback content here -->
+		Sorry, your browser doesn't support canvas technology.
+	</canvas>
+		    
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     
@@ -55,6 +58,7 @@
 		}
 		return false;
 	});
+	
 	socket.on('chat message', function(sendername, msg){
 		$('#messages').append($('<li>').text(sendername + " " + msg));
 		scrollToBottom();
@@ -64,9 +68,69 @@
 		//alert(msg);
 	});
 	
+	socket.on('updatelocation', function(x,y){
+		alert(x,y);
+	});
+	
 	function scrollToBottom() {
 		document.getElementById('bottom').scrollIntoView();
 	};
     </script>
+    
+    <script type="text/javascript">
+		var canvas;
+		var ctx;
+		var mx = 0;
+		var my = 0;
+		var x = 50;
+		var y = 50;
+		var WIDTH = 300;
+            var HEIGHT = 300;
+		function init() {
+			canvas = document.getElementById("myCanvas");
+			ctx = canvas.getContext("2d");
+			window.onkeydown = keydownControl;
+			return setInterval(draw, 100);
+		}
+		function circle(x,y,r) {
+			ctx.beginPath();
+			ctx.arc(x, y, r, 0, Math.PI*2, true);
+			ctx.fill();
+		}
+		function draw() {
+			clear();
+			circle(x, y, 20);
+			if (x + mx > WIDTH || x + mx < 0)
+			mx = -mx;
+			if (y + my > HEIGHT || y + my < 0)
+			my = -my;
+			x += mx;
+			y += my;
+		}
+		function clear() {
+			ctx.clearRect(0, 0, WIDTH, HEIGHT);
+		}
+		function keydownControl(e) {
+			if(e.keyCode==37) {
+				mx = -2;
+				my = 0;
+				socket.emit('chat message', 'x', 'y');
+			} else
+			if (e.keyCode==38) {
+				mx = 0;
+				my = -2;
+			} else if
+			(e.keyCode==39) {
+				mx = 2;
+				my = 0;
+			} else
+			if (e.keyCode==40) {
+				mx = 0;
+				my = 2;
+			}
+		}
+		init();
+	</script>
+	
   </body>
 </html>
