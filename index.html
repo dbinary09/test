@@ -5,30 +5,45 @@
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 30%; }
+      form input { border: 0; padding: 10px; width: 75%; margin-right: .5%; }
+      form button { width: 24%; background: rgb(130, 224, 255); border: none; padding: 10px; margin-left: .5%;}
       #messages { list-style-type: none; margin: 0; padding: 0; }
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
 	#namediv { min-height: 100%; }
     </style>
   </head>
-  <body onload=init()>
-    <ul id="messages"></ul>
-    <div id="bottom" style="height: 45px;">_____________</div>
+	<body onload=init()>
+		<table>
+			<tr>
+				<td style="width:50%;position:fixed">
+					<div >
+						<form action="" id=namediv hidden="true" >
+							<input id="nameinput" autocomplete="off" /><button>Set name</button>
+						</form>
+						<form action="" id=chatdiv>
+							<input id="chatinput" autocomplete="off" /><button>Send</button>
+						</form>
+						<ul id="messages"></ul>
+						<div id="bottom" style="height: 45px;">_______</div>
+					</div>
+				</td>
+				<td style="width:50%">
+					<div >
+						<canvas id="myCanvas" width="500" height="500" style= "border:1px solid black">
+						<!-- Insert fallback content here -->
+						Sorry, your browser doesn't support canvas technology.
+					    </canvas>
+					</div>
+					
+				</td>
+			</tr>
+		</table>
+
     
-    <form action="" id=namediv  hidden="true" >
-	<input id="nameinput" autocomplete="off" /><button>Set name</button>
-    </form>
-    <form action="" id=chatdiv>
-      <input id="chatinput" autocomplete="off" /><button>Send</button>
-    </form>
     
-    <canvas id="myCanvas" width="300" height="300">
-		<!-- Insert fallback content here -->
-		Sorry, your browser doesn't support canvas technology.
-	</canvas>
+    
 		    
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
@@ -54,7 +69,6 @@
 		if (msg){
 			socket.emit('chat message', name, msg);
 			$('#chatinput').val('');	// clears text
-			socket.emit('payload', msg);
 		}
 		return false;
 	});
@@ -65,18 +79,19 @@
 	});
 
 	socket.on('payload', function(msg){
-		//alert(msg);
+		alert(msg);
 	});
 	
-	socket.on('updatelocation', function(x,y){
-		alert(x,y);
+	socket.on('update', function(mx,my){
+		x = mx;
+		y = my;// alert(mx + " " + my);
+		updateAll();
 	});
 	
 	function scrollToBottom() {
 		document.getElementById('bottom').scrollIntoView();
 	};
     </script>
-    
     <script type="text/javascript">
 		var canvas;
 		var ctx;
@@ -84,28 +99,40 @@
 		var my = 0;
 		var x = 50;
 		var y = 50;
-		var WIDTH = 300;
-            var HEIGHT = 300;
+		var WIDTH = 500;
+            var HEIGHT = 500;
 		function init() {
 			canvas = document.getElementById("myCanvas");
 			ctx = canvas.getContext("2d");
 			window.onkeydown = keydownControl;
-			return setInterval(draw, 100);
+			circle(x, y, 20);
+			return setInterval(draw, 500);
 		}
 		function circle(x,y,r) {
 			ctx.beginPath();
 			ctx.arc(x, y, r, 0, Math.PI*2, true);
 			ctx.fill();
 		}
-		function draw() {
+		function updateAll() {
 			clear();
 			circle(x, y, 20);
-			if (x + mx > WIDTH || x + mx < 0)
-			mx = -mx;
-			if (y + my > HEIGHT || y + my < 0)
-			my = -my;
-			x += mx;
-			y += my;
+		}
+		
+		function draw() {
+			if (mx != 0 || my != 0){
+				clear();
+				circle(x, y, 20);
+				if (x + mx > WIDTH || x + mx < 0)
+				mx = -mx;
+				if (y + my > HEIGHT || y + my < 0)
+				my = -my;
+				x += mx;
+				y += my;
+				mx = 0;
+				my = 0;
+				socket.emit('update', x, y);
+				// socket.emit('chat message', x, y);
+			}
 		}
 		function clear() {
 			ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -114,7 +141,6 @@
 			if(e.keyCode==37) {
 				mx = -2;
 				my = 0;
-				socket.emit('chat message', 'x', 'y');
 			} else
 			if (e.keyCode==38) {
 				mx = 0;

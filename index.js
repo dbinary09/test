@@ -18,8 +18,8 @@ io.on('connection', function(socket){
   socket.on('payload', function(msg){
     io.emit('payload', msg);
   });
-  socket.on('updatelocation', function(x,y){
-    io.emit('updatelocation', x, y);
+  socket.on('update', function(mx,my){
+    io.emit('update', mx,my);
   });
 });
 
