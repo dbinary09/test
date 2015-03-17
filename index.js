@@ -8,6 +8,8 @@ var port = process.env.PORT || 3000;
 var ax = 0;
 var ay = 0;
 
+var hash = {};
+
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function(req, res){
@@ -21,8 +23,11 @@ io.on('connection', function(socket){
   socket.on('payload', function(msg){
     io.emit('payload', msg);
   });
-  socket.on('update', function(mx,my){
-    io.emit('update', mx,my);
+  socket.on('update', function(id,mx,my,ox,oy){
+    var pair = [mx,my,ox,oy];
+    hash[id] = pair;
+    //io.emit('update', hash[id],mx,my);
+    io.emit('update', hash, mx, my);
   });
 });
 

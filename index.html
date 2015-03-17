@@ -87,8 +87,8 @@
 	});
 	
 	socket.on('chat message', function(sendername, msg){
-		$('#messages').append($('<li>').text(sendername + " " + msg));
-		$('#textarea').append(sendername + " : " + msg + "\n");
+		// $('#messages').append($('<li>').text(sendername + " " + msg));
+		$('#textarea').append(sendername + " ::: " + msg + "\n");
 		scrollToBottom();
 	});
 
@@ -96,14 +96,33 @@
 		alert(msg);
 	});
 	
-	socket.on('update', function(mx,my){
-		x = mx;
-		y = my;// alert(mx + " " + my);
-		updateAll();
+	socket.on('update', function(names, mx,my){
+		//x = mx;
+		//y = my;// alert(mx + " " + my);
+		// $('#textarea').append("\n" + name[0] + "," + name[1]);
+		// alert(name);
+		//alert(name[0] + "," + name[1]);
+		// server push all
+		updateAll(names);
+		// server push single
+		//updateSingle(names);
+		
+		scrollToBottom();
 	});
 	
+	Object.size = function(obj) {
+	var size = 0, key;
+	for (key in obj) {
+		if (obj.hasOwnProperty(key)) size++;
+	}
+	return size;
+	};
+
+
 	function scrollToBottom() {
-		document.getElementById('bottom').scrollIntoView();
+		// document.getElementById('bottom').scrollIntoView();
+		var textarea = document.getElementById('textarea');
+		textarea.scrollTop = textarea.scrollHeight;
 	};
     </script>
     <script type="text/javascript">
@@ -114,29 +133,43 @@
 		var x = 50;
 		var y = 50;
 		var WIDTH = 500;
-        var HEIGHT = 500;
-        var moveSpeed = 2;
+		var HEIGHT = 500;
+		var moveSpeed = 10;
 		function init() {
 			canvas = document.getElementById("myCanvas");
 			ctx = canvas.getContext("2d");
+			// ctx.globalCompositeOperation = 'destination-out'
 			window.onkeydown = keydownControl;
 			window.onkeyup = keyupControl;
 			circle(x, y, 20);
-			return setInterval(draw, 10);
+			return setInterval(draw, 250);
 		}
-		function circle(x,y,r) {
+		function circle(x,y,r,name) {
 			ctx.beginPath();
 			ctx.arc(x, y, r, 0, Math.PI*2, true);
 			ctx.fill();
+			ctx.textAlign = "center";
+			ctx.fillText(name, x, y + 30);
 		}
-		function updateAll() {
+		// server push all hashes 
+		function updateAll(names) {
 			clear();
-			circle(x, y, 20);
+			for(var key in names) {
+				var value = names[key];
+				circle(value[0], value[1], 20, key);
+			}	
+		}
+		// server push whoever emits to server
+		function updateSingle(names) {
+			// clear();
+			ctx.fillRect(0,0,300,150);
+			ctx.clearRect(names[2]-20,names[3]-20,50,50);
+			circle(names[0], names[1], 20, names);
 		}
 		
 		function draw() {
 			if (mx != 0 || my != 0){
-				clear();
+				//clear();
 				circle(x, y, 20);
 				if (x + mx > WIDTH || x + mx < 0)
 					mx = 0;
@@ -148,11 +181,13 @@
 				if (mx < -moveSpeed) mx = -moveSpeed;
 				if (my > moveSpeed) my = moveSpeed;
 				if (my < -moveSpeed) my = -moveSpeed;
+				var oldX = x;
+				var oldY = y;
 				x += mx;
 				y += my;
 				//mx = 0;
 				//my = 0;
-				socket.emit('update', x, y);
+				socket.emit('update', name, x, y, oldX, oldY);
 				// socket.emit('chat message', x, y);
 			}
 		}
