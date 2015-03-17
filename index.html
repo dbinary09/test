@@ -62,7 +62,9 @@
 	
     
     <script>
-    var name = "";
+	var name = "";
+	var alldata;
+    
 	if (name != ""){	// name already set
 		$('#chatdiv').show();
 		$('#namediv').hide();
@@ -104,6 +106,7 @@
 		//alert(name[0] + "," + name[1]);
 		// server push all
 		updateAll(names);
+		// alldata = names;
 		// server push single
 		//updateSingle(names);
 		
@@ -134,7 +137,7 @@
 		var y = 50;
 		var WIDTH = 500;
 		var HEIGHT = 500;
-		var moveSpeed = 10;
+		var moveSpeed = 20;
 		function init() {
 			canvas = document.getElementById("myCanvas");
 			ctx = canvas.getContext("2d");
@@ -153,7 +156,7 @@
 		}
 		// server push all hashes 
 		function updateAll(names) {
-			clear();
+			clear(); // either clear by draw or update all
 			for(var key in names) {
 				var value = names[key];
 				circle(value[0], value[1], 20, key);
@@ -170,7 +173,9 @@
 		function draw() {
 			if (mx != 0 || my != 0){
 				//clear();
-				//circle(x, y, 20);
+				ctx.clearRect(x-20,y-20,20,20);
+				circle(x, y, 20, name);
+				//updateAll(alldata);
 				if (x + mx > WIDTH || x + mx < 0)
 					mx = 0;
 				// mx = -mx;
