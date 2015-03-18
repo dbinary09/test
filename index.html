@@ -131,7 +131,7 @@ window.onload = gameLoop;
 		//alert(name[0] + "," + name[1]);
 		// server push all
 		updateAll(names);
-		//alldata = names;
+		alldata = names;
 		// server push single
 		//updateSingle(names);
 		
@@ -162,7 +162,7 @@ window.onload = gameLoop;
 		var y = 50;
 		var WIDTH = 500;
 		var HEIGHT = 500;
-		var moveSpeed = 5;
+		var moveSpeed = 2;
 		function init() {
 			canvas = document.getElementById("myCanvas");
 			ctx = canvas.getContext("2d");
@@ -224,9 +224,10 @@ window.onload = gameLoop;
 				var oldX = x;
 				var oldY = y;
 				
-				clearCircle(x,y,20);
+				
 				x += mx;
 				y += my;
+				clearCircle(oldX,oldY,30);
 				circle(x, y, 20, name);
 				//mx = 0;
 				//my = 0;
