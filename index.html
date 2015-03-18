@@ -15,8 +15,9 @@
     </style>
   </head>
 	<body onload=init()>
-
-
+	
+	<div id="fpscontainer" style="float: right;"></div>
+	
 		<table>
 			<tr>
 				<td style="width:50%;position:fixed">
@@ -54,14 +55,38 @@
 			</tr>
 		</table>
 
-    
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-	
+      <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 
-	
-    
     <script>
+    
+    var fps = {
+	startTime : 0,
+	frameNumber : 0,
+	getFPS : function(){
+		this.frameNumber++;
+		var d = new Date().getTime(),
+			currentTime = ( d - this.startTime ) / 1000,
+			result = Math.floor( ( this.frameNumber / currentTime ) );
+
+		if( currentTime > 1 ){
+			this.startTime = new Date().getTime();
+			this.frameNumber = 0;
+		}
+		return result;
+
+	}	
+};
+
+var f = document.getElementById("fpscontainer");
+
+function gameLoop(){
+	setTimeout( gameLoop,1000 / 60 );
+	f.innerHTML = fps.getFPS();
+}
+
+window.onload = gameLoop;
+
 	var name = "";
 	var alldata;
     
@@ -106,7 +131,7 @@
 		//alert(name[0] + "," + name[1]);
 		// server push all
 		updateAll(names);
-		// alldata = names;
+		//alldata = names;
 		// server push single
 		//updateSingle(names);
 		
@@ -137,15 +162,15 @@
 		var y = 50;
 		var WIDTH = 500;
 		var HEIGHT = 500;
-		var moveSpeed = 20;
+		var moveSpeed = 3;
 		function init() {
 			canvas = document.getElementById("myCanvas");
 			ctx = canvas.getContext("2d");
 			// ctx.globalCompositeOperation = 'destination-out'
 			window.onkeydown = keydownControl;
 			window.onkeyup = keyupControl;
-			circle(x, y, 20);
-			return setInterval(draw, 100);
+			circle(x, y, 20, name);
+			return setInterval(render, 10);
 		}
 		function circle(x,y,r,name) {
 			ctx.beginPath();
@@ -158,8 +183,14 @@
 		function updateAll(names) {
 			clear(); // either clear by draw or update all
 			for(var key in names) {
-				var value = names[key];
-				circle(value[0], value[1], 20, key);
+				if (key != name){
+					var value = names[key];
+					circle(value[0], value[1], 20, key);
+					$('#textarea').append(key);
+				}else{
+					drawNoUpdate();
+					$('#textarea').append(key);
+				}
 			}	
 		}
 		// server push whoever emits to server
@@ -169,13 +200,18 @@
 			ctx.clearRect(names[2]-20,names[3]-20,50,50);
 			circle(names[0], names[1], 20, names);
 		}
-		
+		function render(){
+			//draw();
+			requestAnimationFrame(draw);
+		}
+		function drawNoUpdate() {
+			circle(x, y, 20, name);
+		}
 		function draw() {
 			if (mx != 0 || my != 0){
 				//clear();
-				ctx.clearRect(x-20,y-20,20,20);
+				//ctx.clearRect(x-20,y-20,20,20);
 				circle(x, y, 20, name);
-				//updateAll(alldata);
 				if (x + mx > WIDTH || x + mx < 0)
 					mx = 0;
 				// mx = -mx;
