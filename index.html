@@ -177,7 +177,8 @@ window.onload = gameLoop;
 			ctx.arc(x, y, r, 0, Math.PI*2, true);
 			ctx.fill();
 			ctx.textAlign = "center";
-			ctx.fillText(name, x, y + 30);
+			//ctx.fillStyle = "#444";	
+			ctx.fillText(name, x, y);
 		}
 		// server push all hashes 
 		function updateAll(names) {
