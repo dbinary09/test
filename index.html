@@ -211,8 +211,6 @@ window.onload = gameLoop;
 			if (mx != 0 || my != 0){
 				//clear();
 				//ctx.clearRect(x-20,y-20,20,20);
-				clearCircle(x,y,20);
-				circle(x, y, 20, name);
 				if (x + mx > WIDTH || x + mx < 0)
 					mx = 0;
 				// mx = -mx;
@@ -225,8 +223,11 @@ window.onload = gameLoop;
 				if (my < -moveSpeed) my = -moveSpeed;
 				var oldX = x;
 				var oldY = y;
+				
+				clearCircle(x,y,20);
 				x += mx;
 				y += my;
+				circle(x, y, 20, name);
 				//mx = 0;
 				//my = 0;
 				socket.emit('update', name, x, y, oldX, oldY);
