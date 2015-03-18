@@ -162,7 +162,7 @@ window.onload = gameLoop;
 		var y = 50;
 		var WIDTH = 500;
 		var HEIGHT = 500;
-		var moveSpeed = 3;
+		var moveSpeed = 5;
 		function init() {
 			canvas = document.getElementById("myCanvas");
 			ctx = canvas.getContext("2d");
@@ -186,10 +186,10 @@ window.onload = gameLoop;
 				if (key != name){
 					var value = names[key];
 					circle(value[0], value[1], 20, key);
-					$('#textarea').append(key);
+					//$('#textarea').append(key);
 				}else{
 					drawNoUpdate();
-					$('#textarea').append(key);
+					//$('#textarea').append(key);
 				}
 			}	
 		}
