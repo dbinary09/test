@@ -135,7 +135,7 @@ window.onload = gameLoop;
 		// server push single
 		//updateSingle(names);
 		
-		scrollToBottom();
+		//scrollToBottom();
 	});
 	
 	Object.size = function(obj) {
@@ -207,6 +207,8 @@ window.onload = gameLoop;
 		function drawNoUpdate() {
 			circle(x, y, 20, name);
 		}
+		var oldX;
+		var oldY;
 		function draw() {
 			if (mx != 0 || my != 0){
 				//clear();
@@ -221,13 +223,11 @@ window.onload = gameLoop;
 				if (mx < -moveSpeed) mx = -moveSpeed;
 				if (my > moveSpeed) my = moveSpeed;
 				if (my < -moveSpeed) my = -moveSpeed;
-				var oldX = x;
-				var oldY = y;
-				
-				
+				oldX = x;
+				oldY = y;
 				x += mx;
 				y += my;
-				clearCircle(oldX,oldY,30);
+				clearCircle(oldX,oldY,22);
 				circle(x, y, 20, name);
 				//mx = 0;
 				//my = 0;
@@ -244,6 +244,7 @@ window.onload = gameLoop;
 			ctx.arc(x, y, radius, 0, 2*Math.PI, true);
 			ctx.clip();
 			ctx.clearRect(x-radius,y-radius,radius*2,radius*2);
+			ctx.clearRect(oldX,oldY,20,10); // clear name below circle
 			ctx.restore();
 		}
 		function keydownControl(e) {
